@@ -1,20 +1,35 @@
 package code.be.codebe.infrastructure.config;
 
-import code.be.codebe.infrastructure.persistence.JpaUserRepository;
+import code.be.codebe.infrastructure.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Configuration @RequiredArgsConstructor
+@Configuration @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-  private final JpaUserRepository userRepository;
+  private final JwtAuthenticationFilter jwtAuthFilter;
+  private final AuthenticationProvider provider;
 
   @Bean
-  public UserDetailsService userDetailsService() {
-    return username -> userRepository.findByUsername(username)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "username not found"));
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers("")
+            .permitAll().anyRequest().authenticated()
+        )
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authenticationProvider(provider)
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+
+    return http.build();
   }
 }
