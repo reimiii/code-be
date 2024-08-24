@@ -1,6 +1,6 @@
-package code.be.codebe.adapters.security;
+package code.be.codebe.infrastructure.security;
 
-import code.be.codebe.infrastructure.security.JwtTokenProvider;
+import code.be.codebe.application.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +14,7 @@ import java.io.IOException;
 @Component @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  private final JwtTokenProvider jwtTokenProvider;
+  private final JwtService jwtService;
 
   @Override
   protected void doFilterInternal(
@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     jwt = authHeader.substring(7);
-    username = jwtTokenProvider.extractUsername(jwt);
+    username = jwtService.extractUsername(jwt);
 
   }
 }
