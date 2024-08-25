@@ -24,11 +24,13 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+  private final ValidationService validationService;
 
   public AuthResponse register(RegisterRequest request) {
+    validationService.validateRequest(request);
 
     if (userRepository.existsByUsername(request.getUsername())) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already taken");
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "username already taken");
     }
 
     var user = new User();
@@ -44,6 +46,8 @@ public class AuthService {
   }
 
   public AuthResponse authenticate(AuthRequest request) {
+    validationService.validateRequest(request);
+
     try {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(
