@@ -27,6 +27,10 @@ public class AuthService {
 
   public AuthResponse register(RegisterRequest request) {
 
+    if (userRepository.existsByUsername(request.getUsername())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already taken");
+    }
+
     var user = new User();
     user.setName(request.getName());
     user.setUsername(request.getUsername());
