@@ -8,14 +8,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController @RequestMapping("/api/v1/home")
 public class HomeController {
 
   @GetMapping
-  public ResponseEntity<String> home() {
+  public ResponseEntity<Map<String, String>> home() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     User user = (User) auth.getPrincipal();
 
-    return ResponseEntity.ok("Hello, " + user.getName());
+
+    return ResponseEntity.ok(Map.of("name", user.getName()));
   }
 }
