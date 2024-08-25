@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,12 +40,16 @@ public class AuthService {
   }
 
   public AuthResponse authenticate(AuthRequest request) {
-    authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            request.getUsername(),
-            request.getPassword()
-        )
-    );
+    try {
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(
+              request.getUsername(),
+              request.getPassword()
+          )
+      );
+    } catch (AuthenticationException e) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "username or password wrong");
+    }
 
     var user = userRepository.findByUsername(request.getUsername())
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "username or password wrong"));

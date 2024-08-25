@@ -1,8 +1,8 @@
 package code.be.codebe.adapters.controller;
 
 import code.be.codebe.adapters.dto.request.AuthRequest;
-import code.be.codebe.adapters.dto.response.AuthResponse;
 import code.be.codebe.adapters.dto.request.RegisterRequest;
+import code.be.codebe.adapters.dto.response.AuthResponse;
 import code.be.codebe.application.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
